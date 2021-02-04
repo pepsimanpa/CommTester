@@ -7,7 +7,7 @@ CTCPServer::CTCPServer(void)
     m_nClientCount = 0;
     m_pReceiveFunc = NULL;
     memset(m_nClientSock, 0x00, sizeof(m_nClientSock));
-    memset(m_tClientInfo, 0x00, sizeof(m_tClientInfo));
+    memset(m_tClientAddr, 0x00, sizeof(m_tClientAddr));
 
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -27,13 +27,13 @@ CTCPServer::~CTCPServer(void)
 
 void CTCPServer::SetServerInfo(const char* strIP, int nPort)
 {
-    memset(&m_tServerInfo, 0x00, sizeof(struct sockaddr_in));
-    m_tServerInfo.sin_family = AF_INET;
-    m_tServerInfo.sin_port = htons(nPort);
+    memset(&m_tServerAddr, 0x00, sizeof(struct sockaddr_in));
+    m_tServerAddr.sin_family = AF_INET;
+    m_tServerAddr.sin_port = htons(nPort);
     if (strIP == NULL || strIP == "")
-        m_tServerInfo.sin_addr.s_addr = htonl(INADDR_ANY);
+        m_tServerAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     else
-        m_tServerInfo.sin_addr.s_addr = inet_addr(strIP);
+        m_tServerAddr.sin_addr.s_addr = inet_addr(strIP);
 }
 
 void CTCPServer::SetReceiveFunc(RECEIVECALLBACK pFunc)
@@ -76,7 +76,7 @@ int CTCPServer::Init()
     int nRet = TCP_SERVER_ERROR;
     if (m_bStart != true && m_nServerSock != INVALID_SOCKET)
     {
-        if (bind(m_nServerSock, (struct sockaddr*)&m_tServerInfo, sizeof(struct sockaddr_in)) != SOCKET_ERROR)
+        if (bind(m_nServerSock, (struct sockaddr*)&m_tServerAddr, sizeof(struct sockaddr_in)) != SOCKET_ERROR)
         {
             if (listen(m_nServerSock, SOMAXCONN) != SOCKET_ERROR)
             {
@@ -114,7 +114,7 @@ int CTCPServer::Stop()
     return 0;
 }
 
-int CTCPServer::Send(int nClientIndex, char* pBuff, int nSize)
+int CTCPServer::Send(int nClientIndex, const char* pBuff, int nSize)
 {
     int nRet = -1;
     if (m_nClientSock[nClientIndex] != INVALID_SOCKET)
@@ -140,12 +140,14 @@ void CTCPServer::Accept()
 
         if (m_nClientSock[m_nClientCount] != INVALID_SOCKET)
         {
-            memcpy(&m_tClientInfo[m_nClientCount], &tClientInfo, sizeof(struct sockaddr));
+            memcpy(&m_tClientAddr[m_nClientCount], &tClientInfo, sizeof(struct sockaddr));
 
             // 클라이언트 소켓 별 리시브 스레드 생성 하려면...
             //m_pThreadReceive[m_nClientCount] = new std::thread(&CTCPServer::Receive, this, m_nClientSock[m_nClientCount]);
 
+#ifdef _CONSOLE
             TCP_PRINT("[TCPServer] Accepted!!\n");
+#endif
 
             m_nClientCount++;
         }
@@ -155,12 +157,15 @@ void CTCPServer::Accept()
 void CTCPServer::Receive(int* pSock, int* pSockCount)
 {
     fd_set reads;
-    int nMaxFd = 0;
+    int maxfd = 0;
     char buff[MAX_BUFF_SIZE];
 
     struct timeval tTimeOut;
     tTimeOut.tv_sec = 5;
     tTimeOut.tv_usec = 0;
+
+    int nRet = 0;
+    int nRecvSize = 0;
 
     while (m_bStart)
     {
@@ -170,17 +175,17 @@ void CTCPServer::Receive(int* pSock, int* pSockCount)
             for (int idx = 0; idx < *pSockCount; ++idx)
             {
                 FD_SET(pSock[idx], &reads);
-                if (nMaxFd > pSock[idx])
-                    nMaxFd = pSock[idx];
+                if (maxfd > pSock[idx])
+                    maxfd = pSock[idx];
             }
 
-            int ret = select(nMaxFd + 1, &reads, NULL, NULL, (struct timeval*)&tTimeOut);
+            nRet = select(maxfd + 1, &reads, NULL, NULL, (struct timeval*)&tTimeOut);
 
-            if (ret == SOCKET_ERROR)
+            if (nRet == SOCKET_ERROR)
             {
                 break;
             }
-            else if (ret == 0)            // timeout
+            else if (nRet == 0)            // timeout
             {
                 continue;
             }
@@ -190,10 +195,10 @@ void CTCPServer::Receive(int* pSock, int* pSockCount)
                 {
                     if (FD_ISSET(pSock[idx], &reads))
                     {
-                        int nSize = recv(pSock[idx], buff, MAX_BUFF_SIZE, 0);
+                        nRecvSize = recv(pSock[idx], buff, MAX_BUFF_SIZE, 0);
 
-                        if (nSize > 0 && m_pReceiveFunc != NULL)
-                            m_pReceiveFunc(buff, nSize);
+                        if (nRecvSize > 0 && m_pReceiveFunc != NULL)
+                            m_pReceiveFunc(buff, nRecvSize);
 
                         break;
                     }

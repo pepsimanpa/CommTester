@@ -16,6 +16,9 @@
     <Filter Include="TCP">
       <UniqueIdentifier>{90a65b65-f9e4-44bd-b924-0f06422dec82}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UDP">
+      <UniqueIdentifier>{9f6b50fb-1437-4d3d-bc27-d1202b6af03c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CommBase.cpp">
@@ -27,6 +30,12 @@
     <ClCompile Include="TCP\TCPClient.cpp">
       <Filter>TCP</Filter>
     </ClCompile>
+    <ClCompile Include="UDP\UDPServer.cpp">
+      <Filter>UDP</Filter>
+    </ClCompile>
+    <ClCompile Include="UDP\UDPClient.cpp">
+      <Filter>UDP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TCP\TCPServer.h">
@@ -34,6 +43,12 @@
     </ClInclude>
     <ClInclude Include="TCP\TCPClient.h">
       <Filter>TCP</Filter>
+    </ClInclude>
+    <ClInclude Include="UDP\UDPServer.h">
+      <Filter>UDP</Filter>
+    </ClInclude>
+    <ClInclude Include="UDP\UDPClient.h">
+      <Filter>UDP</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,6 +4,8 @@
 #include <iostream>
 #include "./TCP/TCPServer.h"
 #include "./TCP/TCPClient.h"
+#include "./UDP/UDPServer.h"
+#include "./UDP/UDPClient.h"
 
 int g_nID = 0;
 
@@ -40,9 +42,16 @@ int main(int argc, char* argv[])
     CTCPServer* pTcpServer = new CTCPServer;
     CTCPClient* pTcpClient = new CTCPClient;
 
+    CUDPServer* pUdpServer = new CUDPServer;
+    CUDPClient* pUdpClient = new CUDPClient;
+
     while (1)
     {
-        printf("select command\n1) start tcp server, 2) send data(server -> clinet) \n3) start tcp client, 4) send data(clinet -> server) \n0) exit \n");
+        printf("select command \n");
+        printf("1) start tcp server, 2) send data(server -> client), 3) start tcp client, 4) send data(client -> server) \n");
+        printf("5) start udp server, 6) send data(server -> client), 7) start udp client, 8) send data(client -> server) \n");
+        printf("0) exit \n");
+
         scanf_s("%d", &cmd);
         if (cmd == 1)
         {
@@ -55,7 +64,7 @@ int main(int argc, char* argv[])
         else if (cmd == 2)
         {
             char buff[128];
-            strcpy_s(buff, "tcp server send data");
+            strcpy_s(buff, "[Send] tcp server -> client");
             pTcpServer->Send(0, buff, sizeof(buff));
         }
         else if (cmd == 3)
@@ -70,24 +79,37 @@ int main(int argc, char* argv[])
         else if (cmd == 4)
         {
             char buff[128];
-            strcpy_s(buff, "tcp clinet send data");
+            strcpy_s(buff, "[Send] tcp client -> server");
             pTcpClient->Send(buff, sizeof(buff));
         }
         else if (cmd == 5)
         {
-
+            pUdpServer->SetServerInfo(NULL, 4000);
+            pUdpServer->SetReceiveFunc(recvCallback);
+            pUdpServer->CreateSocket();
+            pUdpServer->Init();
+            pUdpServer->Start();
         }
         else if (cmd == 6)
         {
-
+            char buff[128];
+            strcpy_s(buff, "[Send] udp server -> client");
+            pUdpServer->Send("192.168.0.7", 5000, buff, sizeof(buff));
         }
         else if (cmd == 7)
         {
-
+            pUdpClient->SetServerInfo("192.168.0.7", 4000);
+            pUdpClient->SetReceiveFunc(recvCallback);
+            pUdpClient->CreateSocket();
+            pUdpClient->SetClientInfo("192.168.0.7", 5000);
+            pUdpClient->Init();
+            pUdpClient->Start();
         }
         else if (cmd == 8)
         {
-
+            char buff[128];
+            strcpy_s(buff, "[Send] udp client -> server");
+            pUdpClient->Send(buff, sizeof(buff));
         }
         else if (cmd == 9)
         {
@@ -100,6 +122,12 @@ int main(int argc, char* argv[])
 
             pTcpClient->Stop();
             delete pTcpClient;
+
+            pUdpServer->Stop();
+            delete pUdpServer;
+
+            pUdpClient->Stop();
+            delete pUdpClient;
         }
     }
 

@@ -3,7 +3,7 @@
 
 /**
 @class    CTCPServer
-@author   조용희
+@author   pepsimanpa
 @brief    TCP Server 클래스
 @see
  @remark
@@ -31,12 +31,12 @@ class CTCPServer
 {
 private:
     int m_nServerSock;
-    struct sockaddr_in m_tServerInfo;
+    struct sockaddr_in m_tServerAddr;
     bool m_bStart;
 
     int m_nClientCount;
     int m_nClientSock[MAX_CLIENT_COUNT];
-    struct sockaddr_in m_tClientInfo[MAX_CLIENT_COUNT];
+    struct sockaddr_in m_tClientAddr[MAX_CLIENT_COUNT];
 
     RECEIVECALLBACK m_pReceiveFunc;
 
@@ -52,10 +52,10 @@ public:
     int CreateSocket();                     // create socket & set socket option
     int CloseSocket();
 
-    int Init();                      // listen & bind
+    int Init();                      // bind & listen
     int Start();                               // accept & receive
     int Stop();
-    int Send(int nClientIndex, char* pBuff, int nSize);
+    int Send(int nClientIndex, const char* pBuff, int nSize);
 
     bool IsStart();
 

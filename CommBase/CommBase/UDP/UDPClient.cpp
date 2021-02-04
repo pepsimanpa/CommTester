@@ -1,6 +1,6 @@
-#include "TCPClient.h"
+#include "UDPClient.h"
 
-CTCPClient::CTCPClient(void)
+CUDPClient::CUDPClient(void)
 {
     m_bStart = false;
     m_nServerSock = INVALID_SOCKET;
@@ -12,7 +12,7 @@ CTCPClient::CTCPClient(void)
     WSAStartup(MAKEWORD(2, 2), &wsaData);
 }
 
-CTCPClient::~CTCPClient(void)
+CUDPClient::~CUDPClient(void)
 {
     m_bStart = false;
 
@@ -22,51 +22,46 @@ CTCPClient::~CTCPClient(void)
     m_pThreadReceive->join();
 }
 
-void CTCPClient::SetServerInfo(const char* strIP, int nPort)
+void CUDPClient::SetServerInfo(const char* strIP, int nPort)
 {
-    memset(&m_tServerAddr, 0x00, sizeof(struct sockaddr_in));
-    m_tServerAddr.sin_family = AF_INET;
-    m_tServerAddr.sin_port = htons(nPort);
+    memset(&m_tServerInfo, 0x00, sizeof(struct sockaddr_in));
+    m_tServerInfo.sin_family = AF_INET;
+    m_tServerInfo.sin_port = htons(nPort);
     if (strIP == NULL || strIP == "")
-        m_tServerAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+        m_tServerInfo.sin_addr.s_addr = htonl(INADDR_ANY);
     else
-        m_tServerAddr.sin_addr.s_addr = inet_addr(strIP);
+        m_tServerInfo.sin_addr.s_addr = inet_addr(strIP);
 }
 
-void CTCPClient::SetClientInfo(const char* strIP, int nPort)
+void CUDPClient::SetClientInfo(const char* strIP, int nPort)
 {
-    memset(&m_tClientAddr, 0x00, sizeof(struct sockaddr_in));
-    m_tClientAddr.sin_family = AF_INET;
-    m_tClientAddr.sin_port = htons(nPort);
+    memset(&m_tClientInfo, 0x00, sizeof(struct sockaddr_in));
+    m_tClientInfo.sin_family = AF_INET;
+    m_tClientInfo.sin_port = htons(nPort);
     if (strIP == NULL || strIP == "")
-        m_tClientAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+        m_tClientInfo.sin_addr.s_addr = htonl(INADDR_ANY);
     else
-        m_tClientAddr.sin_addr.s_addr = inet_addr(strIP);
+        m_tClientInfo.sin_addr.s_addr = inet_addr(strIP);
 }
 
-void CTCPClient::SetReceiveFunc(RECEIVECALLBACK pFunc)
+void CUDPClient::SetReceiveFunc(RECEIVECALLBACK pFunc)
 {
     m_pReceiveFunc = pFunc;
 }
 
-int CTCPClient::CreateSocket()
+int CUDPClient::CreateSocket()
 {
-    int nRet = TCP_CLIENT_ERROR;
+    int nRet = UDP_CLIENT_ERROR;
     if (m_bStart != true)
     {
-        m_nClientSock = socket(AF_INET, SOCK_STREAM, 0);
+        m_nClientSock = socket(AF_INET, SOCK_DGRAM, 0);
 
         if (m_nClientSock != INVALID_SOCKET)
         {
             int opt_val = 1;
             if (setsockopt(m_nClientSock, SOL_SOCKET, SO_REUSEADDR, (char*)&opt_val, sizeof(opt_val)) != SOCKET_ERROR)
             {
-                nRet = TCP_CLIENT_OK;
-            }
-
-            if (setsockopt(m_nClientSock, IPPROTO_TCP, TCP_NODELAY, (char*)&opt_val, sizeof(opt_val)) != SOCKET_ERROR)
-            {
-                nRet = TCP_CLIENT_OK;
+                nRet = UDP_CLIENT_OK;
             }
         }
     }
@@ -74,19 +69,19 @@ int CTCPClient::CreateSocket()
     return nRet;
 }
 
-int CTCPClient::CloseSocket()
+int CUDPClient::CloseSocket()
 {
     return closesocket(m_nClientSock);
 }
 
-int CTCPClient::Init()
+int CUDPClient::Init()
 {
-    int nRet = TCP_CLIENT_ERROR;
+    int nRet = UDP_CLIENT_ERROR;
     if (m_bStart != true && m_nClientSock != INVALID_SOCKET)
     {
-        if (bind(m_nClientSock, (struct sockaddr*)&m_tClientAddr, sizeof(struct sockaddr_in)) != SOCKET_ERROR)
+        if (bind(m_nClientSock, (struct sockaddr*)&m_tClientInfo, sizeof(struct sockaddr_in)) != SOCKET_ERROR)
         {
-            nRet = TCP_CLIENT_OK;
+            nRet = UDP_CLIENT_OK;
         }
         else
             closesocket(m_nClientSock);
@@ -95,23 +90,23 @@ int CTCPClient::Init()
     return nRet;
 }
 
-int CTCPClient::Start()
+int CUDPClient::Start()
 {
     m_bStart = true;
 
-    m_pThreadReceive = new std::thread(&CTCPClient::Connect, this);
+    m_pThreadReceive = new std::thread(&CUDPClient::Connect, this);
 
     return 0;
 }
 
-int CTCPClient::Stop()
+int CUDPClient::Stop()
 {
     m_bStart = false;
 
     return 0;
 }
 
-int CTCPClient::Send(const char* pBuff, int nSize)
+int CUDPClient::Send(char* pBuff, int nSize)
 {
     int nRet = -1;
     if (m_nClientSock != INVALID_SOCKET)
@@ -120,32 +115,32 @@ int CTCPClient::Send(const char* pBuff, int nSize)
     return nRet;
 }
 
-bool CTCPClient::IsStart()
+bool CUDPClient::IsStart()
 {
     return m_bStart;
 }
 
-void CTCPClient::Connect()
+void CUDPClient::Connect()
 {
     while (m_bStart)
     {
-        if (connect(m_nClientSock, (struct sockaddr*)&m_tServerAddr, sizeof(struct sockaddr_in)) != SOCKET_ERROR)
+        if (connect(m_nClientSock, (struct sockaddr*)&m_tServerInfo, sizeof(struct sockaddr_in)) != SOCKET_ERROR)
         {
             m_bConnected = true;
 
-            m_pThreadReceive = new std::thread(&CTCPClient::Receive, this, m_nClientSock);
+            m_pThreadReceive = new std::thread(&CUDPClient::Receive, this, m_nClientSock);
 
 #ifdef _CONSOLE
-            TCP_PRINT("[TCPClient] Connected!!\n");
+            UDP_PRINT("[UDPClient] Connected!!\n");
 #endif
             break;
         }
 
-        TCP_SLEEP(100);
+        UDP_SLEEP(100);
     }
 }
 
-void CTCPClient::Receive(int nSock)
+void CUDPClient::Receive(int nSock)
 {
     fd_set reads;
     char buff[MAX_BUFF_SIZE];

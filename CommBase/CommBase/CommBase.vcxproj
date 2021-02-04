@@ -114,7 +114,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -142,10 +142,14 @@
     <ClCompile Include="CommBase.cpp" />
     <ClCompile Include="TCP\TCPClient.cpp" />
     <ClCompile Include="TCP\TCPServer.cpp" />
+    <ClCompile Include="UDP\UDPClient.cpp" />
+    <ClCompile Include="UDP\UDPServer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TCP\TCPClient.h" />
     <ClInclude Include="TCP\TCPServer.h" />
+    <ClInclude Include="UDP\UDPClient.h" />
+    <ClInclude Include="UDP\UDPServer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
