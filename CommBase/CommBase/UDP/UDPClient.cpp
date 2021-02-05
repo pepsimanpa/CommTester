@@ -122,7 +122,7 @@ bool CUDPClient::IsStart()
 
 void CUDPClient::Connect()
 {
-    while (m_bStart)
+    if (m_bStart)
     {
         if (connect(m_nClientSock, (struct sockaddr*)&m_tServerInfo, sizeof(struct sockaddr_in)) != SOCKET_ERROR)
         {
@@ -130,13 +130,10 @@ void CUDPClient::Connect()
 
             m_pThreadReceive = new std::thread(&CUDPClient::Receive, this, m_nClientSock);
 
-#ifdef _CONSOLE
-            UDP_PRINT("[UDPClient] Connected!!\n");
-#endif
-            break;
+//#ifdef _CONSOLE
+//            UDP_PRINT("[UDPClient] Connected!!\n");
+//#endif
         }
-
-        UDP_SLEEP(100);
     }
 }
 
