@@ -21,9 +21,7 @@
 #define IDC_EDIT_STATUS                 1011
 #define IDC_EDIT_SEND                   1013
 #define IDC_EDIT_CLIENT_LIST            1015
-#define IDC_IPADDRESS_TCP_SRV_IP        1017
-#define IDC_EDIT_TCP_SRV_PORT           1018
-#define IDC_EDIT_TCP_SRV_SEND           1022
+#define IDC_EDIT_SRV_SEND               1022
 
 // Next default values for new objects
 // 

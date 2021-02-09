@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="TCP">
+      <UniqueIdentifier>{fecba24d-3a97-4a5e-8b76-8be2e5895141}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommTester.h">
@@ -39,6 +42,12 @@
     <ClInclude Include="TCPServerDlg.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="..\CommBase\TCP\TCPClient.h">
+      <Filter>TCP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommBase\TCP\TCPServer.h">
+      <Filter>TCP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CommTester.cpp">
@@ -55,6 +64,12 @@
     </ClCompile>
     <ClCompile Include="TCPServerDlg.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommBase\TCP\TCPClient.cpp">
+      <Filter>TCP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommBase\TCP\TCPServer.cpp">
+      <Filter>TCP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

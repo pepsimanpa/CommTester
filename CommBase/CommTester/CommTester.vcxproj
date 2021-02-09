@@ -88,10 +88,10 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;_DEBUG;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -183,6 +183,8 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\CommBase\TCP\TCPClient.h" />
+    <ClInclude Include="..\CommBase\TCP\TCPServer.h" />
     <ClInclude Include="CommTester.h" />
     <ClInclude Include="CommTesterDlg.h" />
     <ClInclude Include="framework.h" />
@@ -193,6 +195,8 @@
     <ClInclude Include="TCPServerDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\CommBase\TCP\TCPClient.cpp" />
+    <ClCompile Include="..\CommBase\TCP\TCPServer.cpp" />
     <ClCompile Include="CommTester.cpp" />
     <ClCompile Include="CommTesterDlg.cpp" />
     <ClCompile Include="pch.cpp">

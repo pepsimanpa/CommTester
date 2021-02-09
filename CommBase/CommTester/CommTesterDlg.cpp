@@ -110,7 +110,7 @@ BOOL CCommTesterDlg::OnInitDialog()
 
 	m_dlgTCPServer.Create(IDD_DIALOG_TCP_SERVER, &m_ctrlTabSelect);
 	m_dlgTCPServer.SetWindowPos(NULL, rtPos.left + 1, rtPos.top + 22, rtPos.Width() - 4, rtPos.Height() - 24, SWP_SHOWWINDOW | SWP_NOZORDER);
-	m_dlgTCPServer.ShowWindow(SW_HIDE);
+	m_dlgTCPServer.ShowWindow(SW_SHOW);
 
 	m_dlgTCPClient.Create(IDD_DIALOG_TCP_CLIENT, &m_ctrlTabSelect);
 	m_dlgTCPClient.SetWindowPos(NULL, rtPos.left + 1, rtPos.top + 22, rtPos.Width() - 4, rtPos.Height() - 24, SWP_SHOWWINDOW | SWP_NOZORDER);
