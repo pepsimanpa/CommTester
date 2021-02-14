@@ -22,7 +22,7 @@
 #define MAX_CLIENT_COUNT       10
 #define MAX_BUFF_SIZE             8192
 
-#define TCP_SLEEP                                          Sleep
+#define TCP_SLEEP                                         Sleep
 #define TCP_PRINT                                         printf
 
 typedef  void (*RECEIVECALLBACK)(char* pBuff, int nSize);
