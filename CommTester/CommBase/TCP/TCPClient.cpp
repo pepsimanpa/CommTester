@@ -7,6 +7,7 @@ CTCPClient::CTCPClient(void)
     m_nClientSock = INVALID_SOCKET;
     m_pReceiveFunc = NULL;
     m_bConnected = false;
+    m_pThreadReceive = NULL;
 
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -19,7 +20,8 @@ CTCPClient::~CTCPClient(void)
     closesocket(m_nServerSock);
     closesocket(m_nClientSock);
 
-    m_pThreadReceive->join();
+    if(m_pThreadReceive != NULL)
+        m_pThreadReceive->join();
 }
 
 void CTCPClient::SetServerInfo(const char* strIP, int nPort)
@@ -149,6 +151,7 @@ void CTCPClient::Receive(int nSock)
 {
     fd_set reads;
     char buff[MAX_BUFF_SIZE];
+    memset(buff, 0x00, sizeof(buff));
 
     struct timeval timeout;
     timeout.tv_sec = 5;

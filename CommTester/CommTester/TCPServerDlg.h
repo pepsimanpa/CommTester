@@ -1,28 +1,28 @@
 ﻿#pragma once
 
-#include "../CommBase/TCP/TCPClient.h"
+#include "../CommBase/TCP/TCPServer.h"
 
-#define TCP_CLT_RECV_MSG (WM_USER+102)
+#define WM_TCP_SRV_RECV_MSG (WM_USER+101)
 
-// CTCPClientDlg 대화 상자
+// CTCPServerDlg 대화 상자
 
-class CTCPClientDlg : public CDialogEx
+class CTCPServerDlg : public CDialogEx
 {
-	DECLARE_DYNAMIC(CTCPClientDlg)
+	DECLARE_DYNAMIC(CTCPServerDlg)
 
 public:
-	CTCPClientDlg(CWnd* pParent = nullptr);   // 표준 생성자입니다.
-	virtual ~CTCPClientDlg();
+	CTCPServerDlg(CWnd* pParent = nullptr);   // 표준 생성자입니다.
+	virtual ~CTCPServerDlg();
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_DIALOG_TCP_CLIENT };
+	enum { IDD = IDD_DIALOG_TCP_SERVER };
 #endif
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 	virtual BOOL OnInitDialog();
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnTcpSrvRecvMsg(WPARAM wParam, LPARAM lParam);
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -33,12 +33,11 @@ public:
 
 	static void ReceiveFunc(char* pBuff, int nSize);
 
-	CIPAddressCtrl m_ctrlAddrCltIP;
 	CIPAddressCtrl m_ctrlAddrSrvIP;
-	CEdit m_ctrlEditCltPort;
 	CEdit m_ctrlEditSrvPort;
 	CEdit m_ctrlEditSendData;
+	CEdit m_ctrlEditCltList;
 	CEdit m_ctrlEditStatus;
 
-	CTCPClient m_tcpClt;
+	CTCPServer* m_pTcpSrv;
 };

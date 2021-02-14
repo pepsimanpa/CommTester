@@ -6,6 +6,9 @@ CTCPServer::CTCPServer(void)
     m_nServerSock = INVALID_SOCKET;
     m_nClientCount = 0;
     m_pReceiveFunc = NULL;
+    m_pThreadAccept = NULL;
+    m_pThreadReceive = NULL;
+
     memset(m_nClientSock, 0x00, sizeof(m_nClientSock));
     memset(m_tClientAddr, 0x00, sizeof(m_tClientAddr));
 
@@ -21,8 +24,10 @@ CTCPServer::~CTCPServer(void)
     for (int idx = 0; idx < m_nClientCount; ++idx)
         closesocket(m_nClientSock[idx]);
 
-    m_pThreadAccept->join();
-    m_pThreadReceive->join();
+    if (m_pThreadAccept != NULL)
+        m_pThreadAccept->join();
+    if (m_pThreadReceive != NULL)
+        m_pThreadReceive->join();
 }
 
 void CTCPServer::SetServerInfo(const char* strIP, int nPort)
@@ -159,6 +164,7 @@ void CTCPServer::Receive(int* pSock, int* pSockCount)
     fd_set reads;
     int maxfd = 0;
     char buff[MAX_BUFF_SIZE];
+    memset(buff, 0x00, sizeof(buff));
 
     struct timeval tTimeOut;
     tTimeOut.tv_sec = 5;

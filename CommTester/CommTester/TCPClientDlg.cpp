@@ -8,17 +8,20 @@
 
 
 // CTCPClientDlg 대화 상자
+CTCPClientDlg* g_pThis = NULL;
 
 IMPLEMENT_DYNAMIC(CTCPClientDlg, CDialogEx)
 
 CTCPClientDlg::CTCPClientDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_TCP_CLIENT, pParent)
 {
-
+	g_pThis = this;
+	m_pTcpClt = new CTCPClient;
 }
 
 CTCPClientDlg::~CTCPClientDlg()
 {
+	delete m_pTcpClt;
 }
 
 void CTCPClientDlg::DoDataExchange(CDataExchange* pDX)
@@ -38,6 +41,7 @@ BEGIN_MESSAGE_MAP(CTCPClientDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_STOP, &CTCPClientDlg::OnBnClickedButtonStop)
 	ON_BN_CLICKED(IDC_BUTTON_OPT, &CTCPClientDlg::OnBnClickedButtonOpt)
 	ON_BN_CLICKED(IDC_BUTTON_SEND, &CTCPClientDlg::OnBnClickedButtonSend)
+	ON_MESSAGE(WM_TCP_CLT_RECV_MSG, &CTCPClientDlg::OnTcpCltRecvMsg)
 END_MESSAGE_MAP()
 
 
@@ -57,21 +61,21 @@ void CTCPClientDlg::OnBnClickedButtonStart()
 			THIRD_IPADDRESS(dwIP), FOURTH_IPADDRESS(dwIP));
 		m_ctrlEditSrvPort.GetWindowText(strPort);
 
-		m_tcpClt.SetServerInfo(CT2A(strIP), _ttoi(strPort));
+		m_pTcpClt->SetServerInfo(CT2A(strIP), _ttoi(strPort));
 
 		m_ctrlAddrCltIP.GetAddress(dwIP);
 		strIP.Format(_T("%d.%d.%d.%d"), FIRST_IPADDRESS(dwIP), SECOND_IPADDRESS(dwIP),
 			THIRD_IPADDRESS(dwIP), FOURTH_IPADDRESS(dwIP));
 		m_ctrlEditCltPort.GetWindowText(strPort);
 
-		m_tcpClt.SetClientInfo(CT2A(strIP), _ttoi(strPort));
+		m_pTcpClt->SetClientInfo(CT2A(strIP), _ttoi(strPort));
 
 
-		m_tcpClt.SetReceiveFunc(&CTCPClientDlg::ReceiveFunc);
+		m_pTcpClt->SetReceiveFunc(&CTCPClientDlg::ReceiveFunc);
 
-		m_tcpClt.CreateSocket();
-		m_tcpClt.Init();
-		m_tcpClt.Start();
+		m_pTcpClt->CreateSocket();
+		m_pTcpClt->Init();
+		m_pTcpClt->Start();
 	}
 }
 
@@ -79,7 +83,7 @@ void CTCPClientDlg::OnBnClickedButtonStart()
 void CTCPClientDlg::OnBnClickedButtonStop()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	m_tcpClt.Stop();
+	m_pTcpClt->Stop();
 }
 
 
@@ -97,14 +101,14 @@ void CTCPClientDlg::OnBnClickedButtonSend()
 	char chBuff[MAX_BUFF_SIZE];
 	strcpy_s(chBuff, CT2A(strSend));
 
-	m_tcpClt.Send(chBuff, strlen(chBuff));
+	m_pTcpClt->Send(chBuff, strlen(chBuff));
 }
 
 void CTCPClientDlg::ReceiveFunc(char* pBuff, int nSize)
 {
 	if (nSize > 0)
 	{
-		::SendMessage(HWND_BROADCAST, TCP_CLT_RECV_MSG, (WPARAM)pBuff, (LPARAM)nSize);
+		::SendMessage(g_pThis->GetSafeHwnd(), WM_TCP_CLT_RECV_MSG, (WPARAM)pBuff, (LPARAM)nSize);
 	}
 }
 
@@ -143,16 +147,12 @@ BOOL CTCPClientDlg::OnInitDialog()
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 
-
-LRESULT CTCPClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CTCPClientDlg::OnTcpCltRecvMsg(WPARAM wParam, LPARAM lParam)
 {
-	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
-	if (message == TCP_CLT_RECV_MSG)
-	{
-		CString strRecv((char*)wParam);
-		m_ctrlEditStatus.SetSel(-2, -1);				// 커서를 에디트박스 끝으로 이동
-		m_ctrlEditStatus.ReplaceSel(strRecv);     // 에디트 박스에 글자 추가
-	}
+	CString strRecv((char*)wParam);
+	strRecv += "\r\n";
+	m_ctrlEditStatus.SetSel(-2, -1);				// 커서를 에디트박스 끝으로 이동
+	m_ctrlEditStatus.ReplaceSel(strRecv);     // 에디트 박스에 글자 추가
 
-	return CDialogEx::WindowProc(message, wParam, lParam);
+	return 0;
 }

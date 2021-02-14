@@ -6,19 +6,21 @@
 #include "TCPServerDlg.h"
 #include "afxdialogex.h"
 
-
 // CTCPServerDlg 대화 상자
+CTCPServerDlg* g_pThis = NULL;
 
 IMPLEMENT_DYNAMIC(CTCPServerDlg, CDialogEx)
 
 CTCPServerDlg::CTCPServerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_TCP_SERVER, pParent)
 {
-
+	g_pThis = this;
+	m_pTcpSrv = new CTCPServer;
 }
 
 CTCPServerDlg::~CTCPServerDlg()
 {
+	delete m_pTcpSrv;
 }
 
 void CTCPServerDlg::DoDataExchange(CDataExchange* pDX)
@@ -37,7 +39,7 @@ BEGIN_MESSAGE_MAP(CTCPServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_STOP, &CTCPServerDlg::OnBnClickedButtonStop)
 	ON_BN_CLICKED(IDC_BUTTON_OPT, &CTCPServerDlg::OnBnClickedButtonOpt)
 	ON_BN_CLICKED(IDC_BUTTON_SEND, &CTCPServerDlg::OnBnClickedButtonSend)
-	ON_MESSAGE(WM_TCP_SRV_RECV_DATA, &CTCPServerDlg::OnTcpSrvRecvData)
+	ON_MESSAGE(WM_TCP_SRV_RECV_MSG, &CTCPServerDlg::OnTcpSrvRecvMsg)
 END_MESSAGE_MAP()
 
 
@@ -58,12 +60,12 @@ void CTCPServerDlg::OnBnClickedButtonStart()
 		CString strPort;
 		m_ctrlEditSrvPort.GetWindowText(strPort);
 
-		m_tcpSrv.SetServerInfo(CT2A(strIP), _ttoi(strPort));
-		m_tcpSrv.SetReceiveFunc(&CTCPServerDlg::ReceiveFunc);
+		m_pTcpSrv->SetServerInfo(CT2A(strIP), _ttoi(strPort));
+		m_pTcpSrv->SetReceiveFunc(&CTCPServerDlg::ReceiveFunc);
 
-		m_tcpSrv.CreateSocket();
-		m_tcpSrv.Init();
-		m_tcpSrv.Start();
+		m_pTcpSrv->CreateSocket();
+		m_pTcpSrv->Init();
+		m_pTcpSrv->Start();
 	}
 }
 
@@ -71,20 +73,21 @@ void CTCPServerDlg::ReceiveFunc(char* pBuff, int nSize)
 {
 	if (nSize > 0)
 	{
-		::SendMessage(HWND_BROADCAST, WM_TCP_SRV_RECV_DATA, (WPARAM)pBuff, (LPARAM)nSize);
+		::SendMessage(g_pThis->GetSafeHwnd(), WM_TCP_SRV_RECV_MSG, (WPARAM)pBuff, (LPARAM)nSize);
 	}
 }
 
 void CTCPServerDlg::OnBnClickedButtonStop()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	m_tcpSrv.Stop();
+	m_pTcpSrv->Stop();
 }
 
 
 void CTCPServerDlg::OnBnClickedButtonOpt()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	//::SendMessage(g_pThis->GetSafeHwnd(), WM_TCP_SRV_RECV_MSG, (WPARAM)NULL, (LPARAM)NULL);
 }
 
 
@@ -96,7 +99,7 @@ void CTCPServerDlg::OnBnClickedButtonSend()
 	char chBuff[MAX_BUFF_SIZE];
 	strcpy_s(chBuff, CT2A(strSend));
 
-	m_tcpSrv.Send(0, chBuff, strlen(chBuff));
+	m_pTcpSrv->Send(0, chBuff, strlen(chBuff));
 }
 
 
@@ -132,18 +135,10 @@ BOOL CTCPServerDlg::OnInitDialog()
 }
 
 
-LRESULT CTCPServerDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
-
-	return CDialogEx::WindowProc(message, wParam, lParam);
-}
-
-
-
-afx_msg LRESULT CTCPServerDlg::OnTcpSrvRecvData(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CTCPServerDlg::OnTcpSrvRecvMsg(WPARAM wParam, LPARAM lParam)
 {
 	CString strRecv((char*)wParam);
+	strRecv += "\r\n";
 	m_ctrlEditStatus.SetSel(-2, -1);				// 커서를 에디트박스 끝으로 이동
 	m_ctrlEditStatus.ReplaceSel(strRecv);     // 에디트 박스에 글자 추가
 
