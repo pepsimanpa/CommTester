@@ -25,20 +25,28 @@
 #define TCP_SLEEP                                         Sleep
 #define TCP_PRINT                                         printf
 
+typedef enum E_TCP_SRV_EVENT {
+    eTCP_SRV_EVENT_ERROR = 0,
+    eTCP_SRV_EVENT_ACCEPT = 1
+}E_TCP_SRV_EVENT_e;
+
 typedef  void (*RECEIVECALLBACK)(char* pBuff, int nSize);
+typedef  void (*EVENTCALLBACK)(int nEventNum, char* pEventString);
 
 class CTCPServer
 {
 private:
     int m_nServerSock;
     struct sockaddr_in m_tServerAddr;
-    bool m_bStart;
 
     int m_nClientCount;
     int m_nClientSock[MAX_CLIENT_COUNT];
     struct sockaddr_in m_tClientAddr[MAX_CLIENT_COUNT];
 
+    bool m_bStart;
+
     RECEIVECALLBACK m_pReceiveFunc;
+    EVENTCALLBACK m_pEventFunc;
 
     std::thread* m_pThreadAccept;
     std::thread* m_pThreadReceive;
@@ -47,13 +55,16 @@ public:
     CTCPServer(void);
     ~CTCPServer(void);
 
-    void SetServerInfo(const char* strIP, int nPort);
+    void SetServerAddr(const char* strIP, int nPort);
+
     void SetReceiveFunc(RECEIVECALLBACK pFunc);
+    void SetEventFunc(EVENTCALLBACK pFunc);
+
     int CreateSocket();                     // create socket & set socket option
     int CloseSocket();
 
-    int Init();                      // bind & listen
-    int Start();                               // accept & receive
+    int Listen();                              // bind & listen
+    int Start();                               // start accept thread & receive thread
     int Stop();
     int Send(int nClientIndex, const char* pBuff, int nSize);
 

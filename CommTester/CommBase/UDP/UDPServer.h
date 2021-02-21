@@ -42,8 +42,10 @@ public:
     CUDPServer(void);
     ~CUDPServer(void);
 
-    void SetServerInfo(const char* strIP, int nPort);
+    void SetServerAddr(const char* strIP, int nPort);
+
     void SetReceiveFunc(RECEIVECALLBACK pFunc);
+
     int CreateSocket();                    // create socket & set socket option
     int CloseSocket();
 

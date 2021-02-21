@@ -9,6 +9,7 @@
 #define IDR_MAINFRAME                   128
 #define IDD_DIALOG_TCP_SERVER           130
 #define IDD_DIALOG_TCP_CLIENT           131
+#define IDD_DIALOG_UDP                  132
 #define IDC_TAB_SELECT                  1001
 #define IDC_IPADDRESS_SRV_IP            1002
 #define IDC_EDIT_SRV_PORT               1003
@@ -22,6 +23,12 @@
 #define IDC_EDIT_SEND                   1013
 #define IDC_EDIT_CLIENT_LIST            1015
 #define IDC_EDIT_SRV_SEND               1022
+#define IDC_LIST_CLT                    1024
+#define IDC_IPADDRESS_MY_IP             1028
+#define IDC_IPADDRESS_TGT_IP            1029
+#define IDC_EDIT_MY_PORT                1030
+#define IDC_EDIT_TGT_PORT               1031
+#define IDC_BUTTON_CREATE_SOCKET        1032
 
 // Next default values for new objects
 // 
@@ -29,7 +36,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1023
+#define _APS_NEXT_CONTROL_VALUE         1033
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
