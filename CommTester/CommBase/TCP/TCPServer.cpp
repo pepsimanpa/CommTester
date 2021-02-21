@@ -6,6 +6,7 @@ CTCPServer::CTCPServer(void)
     m_nServerSock = INVALID_SOCKET;
     m_nClientCount = 0;
     m_pReceiveFunc = NULL;
+    m_pEventFunc = NULL;
     m_pThreadAccept = NULL;
     m_pThreadReceive = NULL;
 
@@ -30,7 +31,7 @@ CTCPServer::~CTCPServer(void)
         m_pThreadReceive->join();
 }
 
-void CTCPServer::SetServerInfo(const char* strIP, int nPort)
+void CTCPServer::SetServerAddr(const char* strIP, int nPort)
 {
     memset(&m_tServerAddr, 0x00, sizeof(struct sockaddr_in));
     m_tServerAddr.sin_family = AF_INET;
@@ -44,6 +45,11 @@ void CTCPServer::SetServerInfo(const char* strIP, int nPort)
 void CTCPServer::SetReceiveFunc(RECEIVECALLBACK pFunc)
 {
     m_pReceiveFunc = pFunc;
+}
+
+void CTCPServer::SetEventFunc(EVENTCALLBACK pFunc)
+{
+    m_pEventFunc = pFunc;
 }
 
 int CTCPServer::CreateSocket()
@@ -76,7 +82,7 @@ int CTCPServer::CloseSocket()
     return closesocket(m_nServerSock);
 }
 
-int CTCPServer::Init()
+int CTCPServer::Listen()
 {
     int nRet = TCP_SERVER_ERROR;
     if (m_bStart != true && m_nServerSock != INVALID_SOCKET)
@@ -116,12 +122,12 @@ int CTCPServer::Stop()
 {
     m_bStart = false;
 
-    return 0;
+    return TCP_SERVER_OK;
 }
 
 int CTCPServer::Send(int nClientIndex, const char* pBuff, int nSize)
 {
-    int nRet = -1;
+    int nRet = TCP_SERVER_ERROR;
     if (m_nClientSock[nClientIndex] != INVALID_SOCKET)
         nRet = send(m_nClientSock[nClientIndex], pBuff, nSize, 0);
 
@@ -137,22 +143,29 @@ void CTCPServer::Accept()
 {
     while (m_bStart)
     {
-        struct sockaddr tClientInfo;
-        memset(&tClientInfo, 0x00, sizeof(tClientInfo));
+        struct sockaddr_in tClientAddr;
+        memset(&tClientAddr, 0x00, sizeof(tClientAddr));
         int nAddrLen = sizeof(struct sockaddr_in);
 
-        m_nClientSock[m_nClientCount] = accept(m_nServerSock, (struct sockaddr*)&tClientInfo, &nAddrLen);
+        m_nClientSock[m_nClientCount] = accept(m_nServerSock, (struct sockaddr*)&tClientAddr, &nAddrLen);
 
         if (m_nClientSock[m_nClientCount] != INVALID_SOCKET)
         {
-            memcpy(&m_tClientAddr[m_nClientCount], &tClientInfo, sizeof(struct sockaddr));
+            memcpy(&m_tClientAddr[m_nClientCount], &tClientAddr, sizeof(struct sockaddr));
 
             // 클라이언트 소켓 별 리시브 스레드 생성 하려면...
-            //m_pThreadReceive[m_nClientCount] = new std::thread(&CTCPServer::Receive, this, m_nClientSock[m_nClientCount]);
+            //m_pThreadReceive[m_nClientCount] = new std::thread(&CTCPServer::Receive, this, m_nMySock[m_nClientCount]);
 
 #ifdef _CONSOLE
             TCP_PRINT("[TCPServer] Accepted!!\n");
 #endif
+            if (m_pEventFunc)
+            {
+                // 접속 클라이언트 ip 및 port 전달
+                char chClientAddr[64];
+                sprintf_s(chClientAddr, "%s:%d", inet_ntoa(tClientAddr.sin_addr), ntohs(tClientAddr.sin_port));
+                m_pEventFunc(eTCP_SRV_EVENT_ACCEPT, chClientAddr);
+            }
 
             m_nClientCount++;
         }

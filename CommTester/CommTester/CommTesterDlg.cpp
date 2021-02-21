@@ -104,6 +104,7 @@ BOOL CCommTesterDlg::OnInitDialog()
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	m_ctrlTabSelect.InsertItem(0, _T("TCP Server"));
 	m_ctrlTabSelect.InsertItem(1, _T("TCP Client"));
+	m_ctrlTabSelect.InsertItem(2, _T("UDP"));
 
 	CRect rtPos;
 	m_ctrlTabSelect.GetClientRect(&rtPos);
@@ -115,6 +116,10 @@ BOOL CCommTesterDlg::OnInitDialog()
 	m_dlgTCPClient.Create(IDD_DIALOG_TCP_CLIENT, &m_ctrlTabSelect);
 	m_dlgTCPClient.SetWindowPos(NULL, rtPos.left + 1, rtPos.top + 22, rtPos.Width() - 4, rtPos.Height() - 24, SWP_SHOWWINDOW | SWP_NOZORDER);
 	m_dlgTCPClient.ShowWindow(SW_HIDE);
+
+	m_dlgUDP.Create(IDD_DIALOG_UDP, &m_ctrlTabSelect);
+	m_dlgUDP.SetWindowPos(NULL, rtPos.left + 1, rtPos.top + 22, rtPos.Width() - 4, rtPos.Height() - 24, SWP_SHOWWINDOW | SWP_NOZORDER);
+	m_dlgUDP.ShowWindow(SW_HIDE);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -180,6 +185,7 @@ void CCommTesterDlg::OnTcnSelchangeTabSelect(NMHDR* pNMHDR, LRESULT* pResult)
 		case 0:
 		{
 			m_dlgTCPClient.ShowWindow(SW_HIDE);
+			m_dlgUDP.ShowWindow(SW_HIDE);
 
 			m_dlgTCPServer.ShowWindow(SW_SHOW);
 			break;
@@ -187,8 +193,17 @@ void CCommTesterDlg::OnTcnSelchangeTabSelect(NMHDR* pNMHDR, LRESULT* pResult)
 		case 1:
 		{
 			m_dlgTCPServer.ShowWindow(SW_HIDE);
+			m_dlgUDP.ShowWindow(SW_HIDE);
 
 			m_dlgTCPClient.ShowWindow(SW_SHOW);
+			break;
+		}		
+		case 2:
+		{
+			m_dlgTCPServer.ShowWindow(SW_HIDE);
+			m_dlgTCPClient.ShowWindow(SW_HIDE);
+
+			m_dlgUDP.ShowWindow(SW_SHOW);
 			break;
 		}
 	}

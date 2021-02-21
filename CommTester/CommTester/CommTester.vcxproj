@@ -185,6 +185,7 @@
   <ItemGroup>
     <ClInclude Include="..\CommBase\TCP\TCPClient.h" />
     <ClInclude Include="..\CommBase\TCP\TCPServer.h" />
+    <ClInclude Include="..\CommBase\UDP\UDP.h" />
     <ClInclude Include="CommTester.h" />
     <ClInclude Include="CommTesterDlg.h" />
     <ClInclude Include="framework.h" />
@@ -193,10 +194,12 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TCPClientDlg.h" />
     <ClInclude Include="TCPServerDlg.h" />
+    <ClInclude Include="UDPDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\CommBase\TCP\TCPClient.cpp" />
     <ClCompile Include="..\CommBase\TCP\TCPServer.cpp" />
+    <ClCompile Include="..\CommBase\UDP\UDP.cpp" />
     <ClCompile Include="CommTester.cpp" />
     <ClCompile Include="CommTesterDlg.cpp" />
     <ClCompile Include="pch.cpp">
@@ -207,6 +210,7 @@
     </ClCompile>
     <ClCompile Include="TCPClientDlg.cpp" />
     <ClCompile Include="TCPServerDlg.cpp" />
+    <ClCompile Include="UDPDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CommTester.rc" />

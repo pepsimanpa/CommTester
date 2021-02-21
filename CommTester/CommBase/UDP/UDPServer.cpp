@@ -19,7 +19,7 @@ CUDPServer::~CUDPServer(void)
     m_pThreadReceive->join();
 }
 
-void CUDPServer::SetServerInfo(const char* strIP, int nPort)
+void CUDPServer::SetServerAddr(const char* strIP, int nPort)
 {
     memset(&m_tServerAddr, 0x00, sizeof(struct sockaddr_in));
     m_tServerAddr.sin_family = AF_INET;

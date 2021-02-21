@@ -1,28 +1,28 @@
 ﻿#pragma once
 
-#include "../CommBase/TCP/TCPClient.h"
+#include "../CommBase/UDP/UDP.h"
 
-#define WM_TCP_CLT_RECV_MSG (WM_USER+201)
+#define WM_UDP_RECV_MSG (WM_USER+301)
 
-// CTCPClientDlg 대화 상자
+// CUDPDlg 대화 상자
 
-class CTCPClientDlg : public CDialogEx
+class CUDPDlg : public CDialogEx
 {
-	DECLARE_DYNAMIC(CTCPClientDlg)
+	DECLARE_DYNAMIC(CUDPDlg)
 
 public:
-	CTCPClientDlg(CWnd* pParent = nullptr);   // 표준 생성자입니다.
-	virtual ~CTCPClientDlg();
+	CUDPDlg(CWnd* pParent = nullptr);   // 표준 생성자입니다.
+	virtual ~CUDPDlg();
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_DIALOG_TCP_CLIENT };
+	enum { IDD = IDD_DIALOG_UDP };
 #endif
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 	virtual BOOL OnInitDialog();
-	afx_msg LRESULT OnTcpCltRecvMsg(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnUdpRecvMsg(WPARAM wParam, LPARAM lParam);
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -34,12 +34,12 @@ public:
 	static void ReceiveFunc(char* pBuff, int nSize);
 	void PrintStatus(CString str);
 
-	CIPAddressCtrl m_ctrlAddrCltIP;
-	CIPAddressCtrl m_ctrlAddrSrvIP;
-	CEdit m_ctrlEditCltPort;
-	CEdit m_ctrlEditSrvPort;
+	CIPAddressCtrl m_ctrlAddrMyIP;
+	CIPAddressCtrl m_ctrlAddrTgtIP;
+	CEdit m_ctrlEditMyPort;
+	CEdit m_ctrlEditTgtPort;
 	CEdit m_ctrlEditSendData;
 	CEdit m_ctrlEditStatus;
 
-	CTCPClient* m_pTcpClt;
+	CUDP* m_pUdp;
 };

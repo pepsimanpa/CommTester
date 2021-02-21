@@ -22,26 +22,26 @@ CUDPClient::~CUDPClient(void)
     m_pThreadReceive->join();
 }
 
-void CUDPClient::SetServerInfo(const char* strIP, int nPort)
+void CUDPClient::SetServerAddr(const char* strIP, int nPort)
 {
-    memset(&m_tServerInfo, 0x00, sizeof(struct sockaddr_in));
-    m_tServerInfo.sin_family = AF_INET;
-    m_tServerInfo.sin_port = htons(nPort);
+    memset(&m_tServerAddr, 0x00, sizeof(struct sockaddr_in));
+    m_tServerAddr.sin_family = AF_INET;
+    m_tServerAddr.sin_port = htons(nPort);
     if (strIP == NULL || strIP == "")
-        m_tServerInfo.sin_addr.s_addr = htonl(INADDR_ANY);
+        m_tServerAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     else
-        m_tServerInfo.sin_addr.s_addr = inet_addr(strIP);
+        m_tServerAddr.sin_addr.s_addr = inet_addr(strIP);
 }
 
-void CUDPClient::SetClientInfo(const char* strIP, int nPort)
+void CUDPClient::SetClientAddr(const char* strIP, int nPort)
 {
-    memset(&m_tClientInfo, 0x00, sizeof(struct sockaddr_in));
-    m_tClientInfo.sin_family = AF_INET;
-    m_tClientInfo.sin_port = htons(nPort);
+    memset(&m_tClientAddr, 0x00, sizeof(struct sockaddr_in));
+    m_tClientAddr.sin_family = AF_INET;
+    m_tClientAddr.sin_port = htons(nPort);
     if (strIP == NULL || strIP == "")
-        m_tClientInfo.sin_addr.s_addr = htonl(INADDR_ANY);
+        m_tClientAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     else
-        m_tClientInfo.sin_addr.s_addr = inet_addr(strIP);
+        m_tClientAddr.sin_addr.s_addr = inet_addr(strIP);
 }
 
 void CUDPClient::SetReceiveFunc(RECEIVECALLBACK pFunc)
@@ -79,7 +79,7 @@ int CUDPClient::Init()
     int nRet = UDP_CLIENT_ERROR;
     if (m_bStart != true && m_nClientSock != INVALID_SOCKET)
     {
-        if (bind(m_nClientSock, (struct sockaddr*)&m_tClientInfo, sizeof(struct sockaddr_in)) != SOCKET_ERROR)
+        if (bind(m_nClientSock, (struct sockaddr*)&m_tClientAddr, sizeof(struct sockaddr_in)) != SOCKET_ERROR)
         {
             nRet = UDP_CLIENT_OK;
         }
@@ -124,7 +124,7 @@ void CUDPClient::Connect()
 {
     if (m_bStart)
     {
-        if (connect(m_nClientSock, (struct sockaddr*)&m_tServerInfo, sizeof(struct sockaddr_in)) != SOCKET_ERROR)
+        if (connect(m_nClientSock, (struct sockaddr*)&m_tServerAddr, sizeof(struct sockaddr_in)) != SOCKET_ERROR)
         {
             m_bConnected = true;
 

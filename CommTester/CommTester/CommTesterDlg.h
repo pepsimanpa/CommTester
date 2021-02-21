@@ -5,6 +5,7 @@
 #pragma once
 #include "TCPServerDlg.h"
 #include "TCPClientDlg.h"
+#include "UDPDlg.h"
 
 
 // CCommTesterDlg 대화 상자
@@ -40,4 +41,5 @@ public:
 
 	CTCPServerDlg m_dlgTCPServer;
 	CTCPClientDlg m_dlgTCPClient;
+	CUDPDlg m_dlgUDP;
 };

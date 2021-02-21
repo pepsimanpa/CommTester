@@ -24,7 +24,7 @@ CTCPClient::~CTCPClient(void)
         m_pThreadReceive->join();
 }
 
-void CTCPClient::SetServerInfo(const char* strIP, int nPort)
+void CTCPClient::SetServerAddr(const char* strIP, int nPort)
 {
     memset(&m_tServerAddr, 0x00, sizeof(struct sockaddr_in));
     m_tServerAddr.sin_family = AF_INET;
@@ -35,7 +35,7 @@ void CTCPClient::SetServerInfo(const char* strIP, int nPort)
         m_tServerAddr.sin_addr.s_addr = inet_addr(strIP);
 }
 
-void CTCPClient::SetClientInfo(const char* strIP, int nPort)
+void CTCPClient::SetClientAddr(const char* strIP, int nPort)
 {
     memset(&m_tClientAddr, 0x00, sizeof(struct sockaddr_in));
     m_tClientAddr.sin_family = AF_INET;
@@ -81,7 +81,7 @@ int CTCPClient::CloseSocket()
     return closesocket(m_nClientSock);
 }
 
-int CTCPClient::Init()
+int CTCPClient::Bind()
 {
     int nRet = TCP_CLIENT_ERROR;
     if (m_bStart != true && m_nClientSock != INVALID_SOCKET)
@@ -99,23 +99,29 @@ int CTCPClient::Init()
 
 int CTCPClient::Start()
 {
-    m_bStart = true;
+    int nRet = TCP_CLIENT_ERROR;
+    if (m_bStart != true && m_nClientSock != INVALID_SOCKET)
+    {
+        m_bStart = true;
 
-    m_pThreadReceive = new std::thread(&CTCPClient::Connect, this);
+        m_pThreadReceive = new std::thread(&CTCPClient::Connect, this);
 
-    return 0;
+        nRet = TCP_CLIENT_OK;
+    }
+
+    return nRet;
 }
 
 int CTCPClient::Stop()
 {
     m_bStart = false;
 
-    return 0;
+    return TCP_CLIENT_OK;
 }
 
 int CTCPClient::Send(const char* pBuff, int nSize)
 {
-    int nRet = -1;
+    int nRet = TCP_CLIENT_ERROR;
     if (m_nClientSock != INVALID_SOCKET)
         nRet = send(m_nClientSock, pBuff, nSize, 0);
 

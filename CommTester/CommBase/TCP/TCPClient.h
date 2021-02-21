@@ -32,11 +32,12 @@ class CTCPClient
 private:
     int m_nServerSock;
     struct sockaddr_in m_tServerAddr;
-    bool m_bStart;
-    bool m_bConnected;
 
     int m_nClientSock;
     struct sockaddr_in m_tClientAddr;
+
+    bool m_bStart;
+    bool m_bConnected;
 
     RECEIVECALLBACK m_pReceiveFunc;
 
@@ -46,14 +47,16 @@ public:
     CTCPClient(void);
     ~CTCPClient(void);
 
-    void SetServerInfo(const char* strIP, int nPort);
-    void SetClientInfo(const char* strIP, int nPort);
+    void SetServerAddr(const char* strIP, int nPort);
+    void SetClientAddr(const char* strIP, int nPort);
+
     void SetReceiveFunc(RECEIVECALLBACK pFunc);
+
     int CreateSocket();                     // create socket & set socket option
     int CloseSocket();
 
-    int Init();                      // bind (필수아님, clinet port 지정을 위해 사용)
-    int Start();                               // connect
+    int Bind();                                 // bind (필수아님, clinet port 지정을 위해 사용)
+    int Start();                               // start receive thread after tcp server connect
     int Stop();
     int Send(const char* pBuff, int nSize);
 

@@ -29,8 +29,8 @@ void CTCPServerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_IPADDRESS_SRV_IP, m_ctrlAddrSrvIP);
 	DDX_Control(pDX, IDC_EDIT_SRV_PORT, m_ctrlEditSrvPort);
 	DDX_Control(pDX, IDC_EDIT_SEND, m_ctrlEditSendData);
-	DDX_Control(pDX, IDC_EDIT_CLIENT_LIST, m_ctrlEditCltList);
 	DDX_Control(pDX, IDC_EDIT_STATUS, m_ctrlEditStatus);
+	DDX_Control(pDX, IDC_LIST_CLT, m_ctrlListClt);
 }
 
 
@@ -40,6 +40,7 @@ BEGIN_MESSAGE_MAP(CTCPServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_OPT, &CTCPServerDlg::OnBnClickedButtonOpt)
 	ON_BN_CLICKED(IDC_BUTTON_SEND, &CTCPServerDlg::OnBnClickedButtonSend)
 	ON_MESSAGE(WM_TCP_SRV_RECV_MSG, &CTCPServerDlg::OnTcpSrvRecvMsg)
+	ON_MESSAGE(WM_TCP_SRV_ACPT_MSG, &CTCPServerDlg::OnTcpSrvAcptMsg)
 END_MESSAGE_MAP()
 
 
@@ -60,13 +61,25 @@ void CTCPServerDlg::OnBnClickedButtonStart()
 		CString strPort;
 		m_ctrlEditSrvPort.GetWindowText(strPort);
 
-		m_pTcpSrv->SetServerInfo(CT2A(strIP), _ttoi(strPort));
-		m_pTcpSrv->SetReceiveFunc(&CTCPServerDlg::ReceiveFunc);
+		m_pTcpSrv->SetServerAddr(CT2A(strIP), _ttoi(strPort));
 
-		m_pTcpSrv->CreateSocket();
-		m_pTcpSrv->Init();
-		m_pTcpSrv->Start();
+		m_pTcpSrv->SetReceiveFunc(&CTCPServerDlg::ReceiveFunc);
+		m_pTcpSrv->SetEventFunc(&CTCPServerDlg::EventFunc);
+
+		if(m_pTcpSrv->CreateSocket() == TCP_SERVER_OK)
+			if(m_pTcpSrv->Listen() == TCP_SERVER_OK)
+				if(m_pTcpSrv->Start() == TCP_SERVER_OK)
+					PrintStatus(_T("Success Start TCP Server"));
+				else
+					PrintStatus(_T("[ERROR] Start TCP Server"));
+			else
+				PrintStatus(_T("[ERROR] Listen"));
+		else
+			PrintStatus(_T("[ERROR] Create Socket"));
+
 	}
+	else
+		PrintStatus(_T("[ERROR] Incorrect IP and Port"));
 }
 
 void CTCPServerDlg::ReceiveFunc(char* pBuff, int nSize)
@@ -77,10 +90,37 @@ void CTCPServerDlg::ReceiveFunc(char* pBuff, int nSize)
 	}
 }
 
+void CTCPServerDlg::EventFunc(int nEventNum, char* pEventString)
+{
+	switch (nEventNum)
+	{
+	case eTCP_SRV_EVENT_ERROR:
+	{
+		break;
+	}
+	case eTCP_SRV_EVENT_ACCEPT:
+	{
+		::SendMessage(g_pThis->GetSafeHwnd(), WM_TCP_SRV_ACPT_MSG, (WPARAM)pEventString, (LPARAM)0);
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void CTCPServerDlg::PrintStatus(CString str)
+{
+	str += "\r\n";
+	m_ctrlEditStatus.SetSel(-2, -1);		 // 커서를 에디트박스 끝으로 이동
+	m_ctrlEditStatus.ReplaceSel(str);     // 에디트 박스에 글자 추가
+}
+
 void CTCPServerDlg::OnBnClickedButtonStop()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	m_pTcpSrv->Stop();
+
+	PrintStatus(_T("Stop TCP Server"));
 }
 
 
@@ -99,7 +139,13 @@ void CTCPServerDlg::OnBnClickedButtonSend()
 	char chBuff[MAX_BUFF_SIZE];
 	strcpy_s(chBuff, CT2A(strSend));
 
-	m_pTcpSrv->Send(0, chBuff, strlen(chBuff));
+	if (m_ctrlListClt.GetCurSel() > -1)
+	{
+		if(m_pTcpSrv->Send(m_ctrlListClt.GetCurSel(), chBuff, strlen(chBuff)) != TCP_SERVER_ERROR)
+			PrintStatus(_T("[SEND]: ") + strSend);
+		else
+			PrintStatus(_T("[ERROR] Send"));
+	}
 }
 
 
@@ -138,9 +184,19 @@ BOOL CTCPServerDlg::OnInitDialog()
 afx_msg LRESULT CTCPServerDlg::OnTcpSrvRecvMsg(WPARAM wParam, LPARAM lParam)
 {
 	CString strRecv((char*)wParam);
-	strRecv += "\r\n";
-	m_ctrlEditStatus.SetSel(-2, -1);				// 커서를 에디트박스 끝으로 이동
-	m_ctrlEditStatus.ReplaceSel(strRecv);     // 에디트 박스에 글자 추가
+
+	PrintStatus(_T("[RECV]: ") + strRecv);
+
+	return 0;
+}
+
+afx_msg LRESULT CTCPServerDlg::OnTcpSrvAcptMsg(WPARAM wParam, LPARAM lParam)
+{
+	CString strAddr((char*)wParam);
+
+	m_ctrlListClt.InsertString(-1, strAddr);
+
+	PrintStatus(_T("[ACCEPT]: ") + strAddr);
 
 	return 0;
 }

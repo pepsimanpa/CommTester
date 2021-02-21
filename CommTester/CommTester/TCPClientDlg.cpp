@@ -61,22 +61,32 @@ void CTCPClientDlg::OnBnClickedButtonStart()
 			THIRD_IPADDRESS(dwIP), FOURTH_IPADDRESS(dwIP));
 		m_ctrlEditSrvPort.GetWindowText(strPort);
 
-		m_pTcpClt->SetServerInfo(CT2A(strIP), _ttoi(strPort));
+		m_pTcpClt->SetServerAddr(CT2A(strIP), _ttoi(strPort));
 
 		m_ctrlAddrCltIP.GetAddress(dwIP);
 		strIP.Format(_T("%d.%d.%d.%d"), FIRST_IPADDRESS(dwIP), SECOND_IPADDRESS(dwIP),
 			THIRD_IPADDRESS(dwIP), FOURTH_IPADDRESS(dwIP));
 		m_ctrlEditCltPort.GetWindowText(strPort);
 
-		m_pTcpClt->SetClientInfo(CT2A(strIP), _ttoi(strPort));
+		m_pTcpClt->SetClientAddr(CT2A(strIP), _ttoi(strPort));
 
 
 		m_pTcpClt->SetReceiveFunc(&CTCPClientDlg::ReceiveFunc);
 
-		m_pTcpClt->CreateSocket();
-		m_pTcpClt->Init();
-		m_pTcpClt->Start();
+		if (m_pTcpClt->CreateSocket() == TCP_CLIENT_OK)
+			if (m_pTcpClt->Bind() == TCP_CLIENT_OK)
+				if (m_pTcpClt->Start() == TCP_CLIENT_OK)
+					PrintStatus(_T("Success Start TCP Client"));
+				else
+					PrintStatus(_T("[ERROR] Start TCP Client"));
+			else
+				PrintStatus(_T("[ERROR] Bind"));
+		else
+			PrintStatus(_T("[ERROR] Create Socket"));
+
 	}
+	else
+		PrintStatus(_T("[ERROR] Incorrect IP and Port"));
 }
 
 
@@ -84,6 +94,8 @@ void CTCPClientDlg::OnBnClickedButtonStop()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	m_pTcpClt->Stop();
+
+	PrintStatus(_T("Stop TCP Client"));
 }
 
 
@@ -101,7 +113,10 @@ void CTCPClientDlg::OnBnClickedButtonSend()
 	char chBuff[MAX_BUFF_SIZE];
 	strcpy_s(chBuff, CT2A(strSend));
 
-	m_pTcpClt->Send(chBuff, strlen(chBuff));
+	if(m_pTcpClt->Send(chBuff, strlen(chBuff)) != TCP_CLIENT_ERROR)
+		PrintStatus(_T("[SEND]: ") + strSend);
+	else
+		PrintStatus(_T("[ERROR] Send"));
 }
 
 void CTCPClientDlg::ReceiveFunc(char* pBuff, int nSize)
@@ -110,6 +125,13 @@ void CTCPClientDlg::ReceiveFunc(char* pBuff, int nSize)
 	{
 		::SendMessage(g_pThis->GetSafeHwnd(), WM_TCP_CLT_RECV_MSG, (WPARAM)pBuff, (LPARAM)nSize);
 	}
+}
+
+void CTCPClientDlg::PrintStatus(CString str)
+{
+	str += "\r\n";
+	m_ctrlEditStatus.SetSel(-2, -1);		 // 커서를 에디트박스 끝으로 이동
+	m_ctrlEditStatus.ReplaceSel(str);     // 에디트 박스에 글자 추가
 }
 
 
@@ -150,9 +172,8 @@ BOOL CTCPClientDlg::OnInitDialog()
 afx_msg LRESULT CTCPClientDlg::OnTcpCltRecvMsg(WPARAM wParam, LPARAM lParam)
 {
 	CString strRecv((char*)wParam);
-	strRecv += "\r\n";
-	m_ctrlEditStatus.SetSel(-2, -1);				// 커서를 에디트박스 끝으로 이동
-	m_ctrlEditStatus.ReplaceSel(strRecv);     // 에디트 박스에 글자 추가
+
+	PrintStatus(_T("[RECV]: ") + strRecv);
 
 	return 0;
 }

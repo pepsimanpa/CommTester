@@ -3,6 +3,7 @@
 #include "../CommBase/TCP/TCPServer.h"
 
 #define WM_TCP_SRV_RECV_MSG (WM_USER+101)
+#define WM_TCP_SRV_ACPT_MSG (WM_USER+102)
 
 // CTCPServerDlg 대화 상자
 
@@ -23,6 +24,7 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 	virtual BOOL OnInitDialog();
 	afx_msg LRESULT OnTcpSrvRecvMsg(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnTcpSrvAcptMsg(WPARAM wParam, LPARAM lParam);
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -32,12 +34,14 @@ public:
 	afx_msg void OnBnClickedButtonSend();
 
 	static void ReceiveFunc(char* pBuff, int nSize);
+	static void EventFunc(int nEventNum, char* pEventString);
+	void PrintStatus(CString str);
 
 	CIPAddressCtrl m_ctrlAddrSrvIP;
 	CEdit m_ctrlEditSrvPort;
 	CEdit m_ctrlEditSendData;
-	CEdit m_ctrlEditCltList;
 	CEdit m_ctrlEditStatus;
+	CListBox m_ctrlListClt;
 
 	CTCPServer* m_pTcpSrv;
 };

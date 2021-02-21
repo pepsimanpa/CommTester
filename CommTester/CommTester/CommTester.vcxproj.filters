@@ -16,6 +16,12 @@
     <Filter Include="TCP">
       <UniqueIdentifier>{fecba24d-3a97-4a5e-8b76-8be2e5895141}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dialog">
+      <UniqueIdentifier>{4ed905cf-7f73-4347-ab69-0bc180a8128d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UDP">
+      <UniqueIdentifier>{8b2c89df-be52-4aa8-95f9-2a8eaef66a4c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommTester.h">
@@ -36,17 +42,23 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="TCPClientDlg.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="TCPServerDlg.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="..\CommBase\TCP\TCPClient.h">
       <Filter>TCP</Filter>
     </ClInclude>
     <ClInclude Include="..\CommBase\TCP\TCPServer.h">
       <Filter>TCP</Filter>
+    </ClInclude>
+    <ClInclude Include="UDPDlg.h">
+      <Filter>Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="TCPClientDlg.h">
+      <Filter>Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="TCPServerDlg.h">
+      <Filter>Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommBase\UDP\UDP.h">
+      <Filter>UDP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -59,17 +71,23 @@
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="TCPClientDlg.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="TCPServerDlg.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="..\CommBase\TCP\TCPClient.cpp">
       <Filter>TCP</Filter>
     </ClCompile>
     <ClCompile Include="..\CommBase\TCP\TCPServer.cpp">
       <Filter>TCP</Filter>
+    </ClCompile>
+    <ClCompile Include="UDPDlg.cpp">
+      <Filter>Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="TCPClientDlg.cpp">
+      <Filter>Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="TCPServerDlg.cpp">
+      <Filter>Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommBase\UDP\UDP.cpp">
+      <Filter>UDP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

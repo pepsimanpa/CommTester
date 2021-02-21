@@ -36,6 +36,9 @@
     <ClCompile Include="UDP\UDPClient.cpp">
       <Filter>UDP</Filter>
     </ClCompile>
+    <ClCompile Include="UDP\UDP.cpp">
+      <Filter>UDP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TCP\TCPServer.h">
@@ -48,6 +51,9 @@
       <Filter>UDP</Filter>
     </ClInclude>
     <ClInclude Include="UDP\UDPClient.h">
+      <Filter>UDP</Filter>
+    </ClInclude>
+    <ClInclude Include="UDP\UDP.h">
       <Filter>UDP</Filter>
     </ClInclude>
   </ItemGroup>
