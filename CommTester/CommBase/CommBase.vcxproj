@@ -143,15 +143,11 @@
     <ClCompile Include="TCP\TCPClient.cpp" />
     <ClCompile Include="TCP\TCPServer.cpp" />
     <ClCompile Include="UDP\UDP.cpp" />
-    <ClCompile Include="UDP\UDPClient.cpp" />
-    <ClCompile Include="UDP\UDPServer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TCP\TCPClient.h" />
     <ClInclude Include="TCP\TCPServer.h" />
     <ClInclude Include="UDP\UDP.h" />
-    <ClInclude Include="UDP\UDPClient.h" />
-    <ClInclude Include="UDP\UDPServer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

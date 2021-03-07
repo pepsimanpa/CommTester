@@ -13,6 +13,7 @@
 
 #include "winsock2.h"
 #include <thread>
+#include <functional>
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -24,7 +25,8 @@
 #define TCP_SLEEP                                          Sleep
 #define TCP_PRINT                                         printf
 
-typedef  void (*RECEIVECALLBACK)(char* pBuff, int nSize);
+//typedef  void (*RECEIVECALLBACK)(char* pBuff, int nSize);
+#define TCP_CLIENT_RECEIVECALLBACK    std::function<void(char* pBuff, int nSize)>
 
 
 class CTCPClient
@@ -39,7 +41,8 @@ private:
     bool m_bStart;
     bool m_bConnected;
 
-    RECEIVECALLBACK m_pReceiveFunc;
+    //RECEIVECALLBACK m_pReceiveFunc;
+    TCP_CLIENT_RECEIVECALLBACK m_pReceiveFunc;
 
     std::thread* m_pThreadReceive;
 
@@ -50,7 +53,7 @@ public:
     void SetServerAddr(const char* strIP, int nPort);
     void SetClientAddr(const char* strIP, int nPort);
 
-    void SetReceiveFunc(RECEIVECALLBACK pFunc);
+    void SetReceiveFunc(TCP_CLIENT_RECEIVECALLBACK pFunc);
 
     int CreateSocket();                     // create socket & set socket option
     int CloseSocket();

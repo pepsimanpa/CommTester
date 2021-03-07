@@ -44,7 +44,7 @@ void CUDP::SetMyAddr(const char* strIP, int nPort)
         m_tMyAddr.sin_addr.s_addr = inet_addr(strIP);
 }
 
-void CUDP::SetReceiveFunc(RECEIVECALLBACK pFunc)
+void CUDP::SetReceiveFunc(UDP_RECEIVECALLBACK pFunc)
 {
     m_pReceiveFunc = pFunc;
 }

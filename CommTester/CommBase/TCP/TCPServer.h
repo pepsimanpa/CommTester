@@ -13,6 +13,7 @@
 
 #include "winsock2.h"
 #include <thread>
+#include <functional>
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -30,8 +31,10 @@ typedef enum E_TCP_SRV_EVENT {
     eTCP_SRV_EVENT_ACCEPT = 1
 }E_TCP_SRV_EVENT_e;
 
-typedef  void (*RECEIVECALLBACK)(char* pBuff, int nSize);
-typedef  void (*EVENTCALLBACK)(int nEventNum, char* pEventString);
+//typedef  void (*RECEIVECALLBACK)(char* pBuff, int nSize);
+//typedef  void (*EVENTCALLBACK)(int nEventNum, char* pEventString);
+#define TCP_SERVER_RECEIVECALLBACK    std::function<void(char* pBuff, int nSize)>
+#define TCP_SERVER_EVENTCALLBACK    std::function<void(int nEventNum, char* pEventString)>
 
 class CTCPServer
 {
@@ -45,8 +48,8 @@ private:
 
     bool m_bStart;
 
-    RECEIVECALLBACK m_pReceiveFunc;
-    EVENTCALLBACK m_pEventFunc;
+    TCP_SERVER_RECEIVECALLBACK m_pReceiveFunc;
+    TCP_SERVER_EVENTCALLBACK m_pEventFunc;
 
     std::thread* m_pThreadAccept;
     std::thread* m_pThreadReceive;
@@ -57,8 +60,8 @@ public:
 
     void SetServerAddr(const char* strIP, int nPort);
 
-    void SetReceiveFunc(RECEIVECALLBACK pFunc);
-    void SetEventFunc(EVENTCALLBACK pFunc);
+    void SetReceiveFunc(TCP_SERVER_RECEIVECALLBACK pFunc);
+    void SetEventFunc(TCP_SERVER_EVENTCALLBACK pFunc);
 
     int CreateSocket();                     // create socket & set socket option
     int CloseSocket();
