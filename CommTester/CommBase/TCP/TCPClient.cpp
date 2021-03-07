@@ -46,10 +46,15 @@ void CTCPClient::SetClientAddr(const char* strIP, int nPort)
         m_tClientAddr.sin_addr.s_addr = inet_addr(strIP);
 }
 
-void CTCPClient::SetReceiveFunc(RECEIVECALLBACK pFunc)
+void CTCPClient::SetReceiveFunc(TCP_CLIENT_RECEIVECALLBACK pFunc)
 {
     m_pReceiveFunc = pFunc;
 }
+
+//void CTCPClient::SetReceiveFunc(RECEIVECALLBACK pFunc)
+//{
+//    m_pReceiveFunc = pFunc;
+//}
 
 int CTCPClient::CreateSocket()
 {

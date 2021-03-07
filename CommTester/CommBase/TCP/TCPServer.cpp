@@ -42,12 +42,12 @@ void CTCPServer::SetServerAddr(const char* strIP, int nPort)
         m_tServerAddr.sin_addr.s_addr = inet_addr(strIP);
 }
 
-void CTCPServer::SetReceiveFunc(RECEIVECALLBACK pFunc)
+void CTCPServer::SetReceiveFunc(TCP_SERVER_RECEIVECALLBACK pFunc)
 {
     m_pReceiveFunc = pFunc;
 }
 
-void CTCPServer::SetEventFunc(EVENTCALLBACK pFunc)
+void CTCPServer::SetEventFunc(TCP_SERVER_EVENTCALLBACK pFunc)
 {
     m_pEventFunc = pFunc;
 }

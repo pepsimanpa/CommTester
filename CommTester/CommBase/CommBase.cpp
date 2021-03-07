@@ -4,8 +4,8 @@
 #include <iostream>
 #include "./TCP/TCPServer.h"
 #include "./TCP/TCPClient.h"
-#include "./UDP/UDPServer.h"
-#include "./UDP/UDPClient.h"
+//#include "./UDP/UDPServer.h"
+//#include "./UDP/UDPClient.h"
 #include "./UDP/UDP.h"
 
 int g_nID = 0;

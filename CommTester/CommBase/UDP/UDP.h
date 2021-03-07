@@ -13,6 +13,7 @@
 
 #include "winsock2.h"
 #include <thread>
+#include <functional>
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -24,7 +25,8 @@
 #define UDP_SLEEP                                          Sleep
 #define UDP_PRINT                                         printf
 
-typedef  void (*RECEIVECALLBACK)(char* pBuff, int nSize);
+//typedef  void (*RECEIVECALLBACK)(char* pBuff, int nSize);
+#define UDP_RECEIVECALLBACK    std::function<void(char* pBuff, int nSize)>
 
 
 class CUDP
@@ -39,7 +41,7 @@ private:
     bool m_bStart;
     bool m_bConnected;
 
-    RECEIVECALLBACK m_pReceiveFunc;
+    UDP_RECEIVECALLBACK m_pReceiveFunc;
 
     std::thread* m_pThreadReceive;
 
@@ -50,7 +52,7 @@ public:
     void SetTargetAddr(const char* strIP, int nPort);
     void SetMyAddr(const char* strIP, int nPort);
 
-    void SetReceiveFunc(RECEIVECALLBACK pFunc);
+    void SetReceiveFunc(UDP_RECEIVECALLBACK pFunc);
 
     int CreateSocket();                     // create socket & set socket option
     int CloseSocket();
