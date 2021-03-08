@@ -3,8 +3,8 @@ The CommTester project is a program that tests various communications.
 
 ## Features
 
-- TCP Server and Client
-- UDP Server and Client
+- TCP Server / Client
+- UDP Server / Client
 
 ## Requirements
 
@@ -18,7 +18,7 @@ Open solution in Visual Studio 2019
 
 1. Run CommTester
 2. Choose a communication method
-3. Set ip and port (Server and Client)
+3. Set ip and port (Server / Client)
 4. Click the start button
 5. Write and send data
 6. Confirm receive data
