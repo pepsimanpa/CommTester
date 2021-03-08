@@ -1,4 +1,4 @@
-# Commnication Tester
+# Communication Tester
 The CommTester project is a program that tests various communications.
 
 ## Features
