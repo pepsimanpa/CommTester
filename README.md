@@ -33,4 +33,4 @@ pepsimanpa – pepsimanpa@gmail.com
 
 Distributed under the MIT license. See ``LICENSE`` for more information.
 
-[https://github.com/pepsimanpa/github-link](https://github.com/pepsimanpa/)
+[https://github.com/pepsimanpa/CommTester](https://github.com/pepsimanpa/CommTester)
