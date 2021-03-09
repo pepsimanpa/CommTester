@@ -8,14 +8,12 @@
 
 
 // CUDPDlg 대화 상자
-CUDPDlg* g_pThis = NULL;
 
 IMPLEMENT_DYNAMIC(CUDPDlg, CDialogEx)
 
 CUDPDlg::CUDPDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_UDP, pParent)
 {
-	g_pThis = this;
 	m_pUdp = new CUDP;
 }
 
@@ -71,7 +69,7 @@ void CUDPDlg::OnBnClickedButtonStart()
 		m_pUdp->SetMyAddr(CT2A(strIP), _ttoi(strPort));
 
 
-		m_pUdp->SetReceiveFunc(&CUDPDlg::ReceiveFunc);
+		m_pUdp->SetReceiveFunc(std::bind(&CUDPDlg::ReceiveFunc, this, std::placeholders::_1, std::placeholders::_2));
 
 		if (m_pUdp->CreateSocket() == UDP_OK)
 			if (m_pUdp->Bind() == UDP_OK)
@@ -145,7 +143,7 @@ void CUDPDlg::ReceiveFunc(char* pBuff, int nSize)
 {
 	if (nSize > 0)
 	{
-		::SendMessage(g_pThis->GetSafeHwnd(), WM_UDP_RECV_MSG, (WPARAM)pBuff, (LPARAM)nSize);
+		::SendMessage(this->GetSafeHwnd(), WM_UDP_RECV_MSG, (WPARAM)pBuff, (LPARAM)nSize);
 	}
 }
 

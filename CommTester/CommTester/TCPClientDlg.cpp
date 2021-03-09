@@ -8,14 +8,12 @@
 
 
 // CTCPClientDlg 대화 상자
-CTCPClientDlg* g_pThis = NULL;
 
 IMPLEMENT_DYNAMIC(CTCPClientDlg, CDialogEx)
 
 CTCPClientDlg::CTCPClientDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_TCP_CLIENT, pParent)
 {
-	g_pThis = this;
 	m_pTcpClt = new CTCPClient;
 }
 
@@ -71,7 +69,7 @@ void CTCPClientDlg::OnBnClickedButtonStart()
 		m_pTcpClt->SetClientAddr(CT2A(strIP), _ttoi(strPort));
 
 
-		m_pTcpClt->SetReceiveFunc(&CTCPClientDlg::ReceiveFunc);
+		m_pTcpClt->SetReceiveFunc(std::bind(&CTCPClientDlg::ReceiveFunc, this, std::placeholders::_1, std::placeholders::_2));
 
 		if (m_pTcpClt->CreateSocket() == TCP_CLIENT_OK)
 			if (m_pTcpClt->Bind() == TCP_CLIENT_OK)
@@ -123,7 +121,7 @@ void CTCPClientDlg::ReceiveFunc(char* pBuff, int nSize)
 {
 	if (nSize > 0)
 	{
-		::SendMessage(g_pThis->GetSafeHwnd(), WM_TCP_CLT_RECV_MSG, (WPARAM)pBuff, (LPARAM)nSize);
+		::SendMessage(this->GetSafeHwnd(), WM_TCP_CLT_RECV_MSG, (WPARAM)pBuff, (LPARAM)nSize);
 	}
 }
 

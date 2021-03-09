@@ -7,14 +7,12 @@
 #include "afxdialogex.h"
 
 // CTCPServerDlg 대화 상자
-CTCPServerDlg* g_pThis = NULL;
 
 IMPLEMENT_DYNAMIC(CTCPServerDlg, CDialogEx)
 
 CTCPServerDlg::CTCPServerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_TCP_SERVER, pParent)
 {
-	g_pThis = this;
 	m_pTcpSrv = new CTCPServer;
 }
 
@@ -63,8 +61,8 @@ void CTCPServerDlg::OnBnClickedButtonStart()
 
 		m_pTcpSrv->SetServerAddr(CT2A(strIP), _ttoi(strPort));
 
-		m_pTcpSrv->SetReceiveFunc(&CTCPServerDlg::ReceiveFunc);
-		m_pTcpSrv->SetEventFunc(&CTCPServerDlg::EventFunc);
+		m_pTcpSrv->SetReceiveFunc(std::bind(&CTCPServerDlg::ReceiveFunc, this, std::placeholders::_1, std::placeholders::_2));
+		m_pTcpSrv->SetEventFunc(std::bind(&CTCPServerDlg::EventFunc, this, std::placeholders::_1, std::placeholders::_2));
 
 		if(m_pTcpSrv->CreateSocket() == TCP_SERVER_OK)
 			if(m_pTcpSrv->Listen() == TCP_SERVER_OK)
@@ -86,7 +84,7 @@ void CTCPServerDlg::ReceiveFunc(char* pBuff, int nSize)
 {
 	if (nSize > 0)
 	{
-		::SendMessage(g_pThis->GetSafeHwnd(), WM_TCP_SRV_RECV_MSG, (WPARAM)pBuff, (LPARAM)nSize);
+		::SendMessage(this->GetSafeHwnd(), WM_TCP_SRV_RECV_MSG, (WPARAM)pBuff, (LPARAM)nSize);
 	}
 }
 
@@ -100,7 +98,7 @@ void CTCPServerDlg::EventFunc(int nEventNum, char* pEventString)
 	}
 	case eTCP_SRV_EVENT_ACCEPT:
 	{
-		::SendMessage(g_pThis->GetSafeHwnd(), WM_TCP_SRV_ACPT_MSG, (WPARAM)pEventString, (LPARAM)0);
+		::SendMessage(this->GetSafeHwnd(), WM_TCP_SRV_ACPT_MSG, (WPARAM)pEventString, (LPARAM)0);
 		break;
 	}
 	default:

@@ -31,7 +31,7 @@ public:
 	afx_msg void OnBnClickedButtonOpt();
 	afx_msg void OnBnClickedButtonSend();
 
-	static void ReceiveFunc(char* pBuff, int nSize);
+	void ReceiveFunc(char* pBuff, int nSize);
 	void PrintStatus(CString str);
 
 	CIPAddressCtrl m_ctrlAddrCltIP;
