@@ -69,9 +69,9 @@ udp.Send(data, strlen(data));                         // Send data
 udp.Send("192.168.0.12", 7000, data, strlen(data));   // Send data (Set ip & port)
 ```
 
-## Contribute
+## Contributing
 
-We would love you for the contribution to **CommTester**, check the ``LICENSE`` file for more info.
+Contributions, issues, and feature requests are welcome!
 
 ## Contact
 
