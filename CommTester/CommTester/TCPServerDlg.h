@@ -33,8 +33,8 @@ public:
 	afx_msg void OnBnClickedButtonOpt();
 	afx_msg void OnBnClickedButtonSend();
 
-	static void ReceiveFunc(char* pBuff, int nSize);
-	static void EventFunc(int nEventNum, char* pEventString);
+	void ReceiveFunc(char* pBuff, int nSize);
+	void EventFunc(int nEventNum, char* pEventString);
 	void PrintStatus(CString str);
 
 	CIPAddressCtrl m_ctrlAddrSrvIP;
